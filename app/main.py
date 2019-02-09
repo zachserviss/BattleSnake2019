@@ -41,7 +41,7 @@ def start():
     """
     print(json.dumps(data))
 
-    color = "#00FF00"
+    color = "#00FF09"
 
     return start_response(color)
 
@@ -54,10 +54,20 @@ def move():
     TODO: Using the data from the endpoint request object, your
             snake AI must choose a direction to move in.
     """
-    print(json.dumps(data))
+    cur_turn = data['turn']
+    width = data['board']['width']
+    height = data['board']['height']
+    food = data['board']['food']
+    baddies = data['board']['snakes']
+    health = data['you']['health']
+    yaboi = data['you']['body']
 
-    directions = ['up', 'down', 'left', 'right']
-    direction = random.choice(directions)
+    
+    directions = ['up','left','down','right']
+    direction = directions[cur_turn %4]
+    if (health < 50):
+        foodx = food[0]
+        direction = directions[0]
 
     return move_response(direction)
 
