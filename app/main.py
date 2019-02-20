@@ -60,7 +60,8 @@ def move():
     food = data['board']['food']
     baddies = data['board']['snakes']
     health = data['you']['health']
-    yaboi = data['you']['body'][0]
+    head = data['you']['body'][0]
+    body = data['you']['body']
 
     def foodClosest():
         minDistance = [0,0,width+height]
@@ -68,8 +69,8 @@ def move():
             fooditemx = a["x"]
             fooditemy = a["y"]
 
-            snakex = yaboi["x"]
-            snakey = yaboi["y"]
+            snakex = head["x"]
+            snakey = head["y"]
 
             diffx = fooditemx - snakex
             diffy = fooditemy - snakey
@@ -94,12 +95,37 @@ def move():
                 return "down"
             else:
                 return	"up"
+    
+    def bodyCrash():
+        for a in body:
+            bodyx += a["x"]
+            bodyy += a["y"]
+
+        if head["x"] > bodyx:
+            return "right"
+        else:
+            return "left"
+        if head["y"] > bodyy:
+            return "down"
+        else:
+            return "up"          
+                                  
 
     directions = ['up','left','down','right']
     direction = directions[cur_turn %4]
-    if (health < 50):
+
+
+    
+    
+    if (health < 10):
         arr = foodClosest()
         direction = foodDirection(arr[0],arr[1])
+    
+    if len(body) > 4:
+        direction = bodyCrash()
+
+    if head["x"]-1 == width:
+        direction = bodyCrash()        
 
     return move_response(direction)
     
