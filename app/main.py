@@ -65,53 +65,9 @@ def move():
     
     directions = ['up','left','down','right']
     direction = directions[cur_turn %4]
-    
-	
-
-	def foodClosest():
-		minDistance[0,0,width+height]
-		for a in food:
-			fooditemx = a["x"]
-			fooditemy = a["y"]
-
-			snakex = yaboi["x"]
-			snakey = yaboi["y"]
-
-			diffx = fooditemx - snakex
-			diffy = fooditemy - snakey
-
-			currDistance = abs(diffx)+abs(diffy)
-			
-			if currDistance < (minDistance[2]):
-				minDistance[2] =currDistance 
-				minDistance[0] = diffx
-				minDistance[1] = diffy
-
-		return minDistance
-
-   	def foodDirection(x,y):
-   		if abs(x)>=abs(y):
-   			if x > 0:
-   				return "right"
-   			else:
-   				return "left"
-   		else:
-   			if y > 0:
-   				return "down"
-   			else:
-   				return	"up"
-
-
-   	
-   	
-    #if (health < 50):
-    arr = foodClosest() 
-    direction = foodDirection(arr[0],arr[1])
-
-
-
-
-
+    if (health < 50):
+	    arr = foodClosest() 
+	    direction = foodDirection(arr[0],arr[1])
 
 
 
@@ -120,6 +76,45 @@ def move():
 
 
     return move_response(direction)
+global minDistance	
+
+def foodClosest():
+	minDistance = [0,0,width+height]
+	for a in food:
+		fooditemx = a["x"]
+		fooditemy = a["y"]
+
+		snakex = yaboi["x"]
+		snakey = yaboi["y"]
+
+		diffx = fooditemx - snakex
+		diffy = fooditemy - snakey
+
+		currDistance = abs(diffx)+abs(diffy)
+		
+		if currDistance < (minDistance[2]):
+			minDistance[2] =currDistance 
+			minDistance[0] = diffx
+			minDistance[1] = diffy
+
+	return minDistance
+
+def foodDirection(x,y):
+	if abs(x)>=abs(y):
+		if x > 0:
+			return "right"
+		else:
+			return "left"
+	else:
+		if y > 0:
+			return "down"
+		else:
+			return	"up"
+
+
+   	
+   	
+    
 
 
 @bottle.post('/end')
