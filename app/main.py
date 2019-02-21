@@ -78,14 +78,14 @@ def move():
             currDistance = abs(diffx)+abs(diffy)
 
             if currDistance < (minDistance[2]):
-                minDistance[2] =currDistance
+                minDistance[2] = currDistance
                 minDistance[0] = diffx
                 minDistance[1] = diffy
 
         return minDistance
 
     def foodDirection(x,y):
-        if abs(x)>=abs(y):
+        if abs(x) >= abs(y):
             if x > 0:
                 return "right"
             else:
@@ -96,40 +96,41 @@ def move():
             else:
                 return	"up"
     
-    def bodyCrash():
+    def bodyCrash(currentMove):
+        #right is minus x
+        #left is plus x
+        #up is plus y
+        #down is minus y
+        move = currentMove
         for a in body:
-            bodyx += a["x"]
-            bodyy += a["y"]
-
-        if head["x"] > bodyx:
-            return "right"
-        else:
-            return "left"
-        if head["y"] > bodyy:
-            return "down"
-        else:
-            return "up"          
-                                  
+            if currentMove == "right":
+                if head["x"]+1 == a["x"] and head["y"] == a["y"]:
+                    move = "down"
+            if currentMove == "left":
+                if head["x"]-1 == a["x"] and head["y"] == a["y"]:
+                    move = "up"
+            if currentMove == "up":
+                if head["y"]-1 == a["y"] and head["x"] == a["x"]:
+                    move = "right"
+            if currentMove == "down":
+                if head["y"]+1 == a["y"] and head["x"] == a["x"]:
+                    move = "left"
+        return move
 
     directions = ['up','left','down','right']
     direction = directions[cur_turn %4]
 
-
-    
-    
-    if (health < 10):
+    if (health < 90):
         arr = foodClosest()
         direction = foodDirection(arr[0],arr[1])
-    
-    if len(body) > 4:
-        direction = bodyCrash()
 
-    if head["x"]-1 == width:
-        direction = bodyCrash()        
+
+    direction = bodyCrash(direction)
+    direction = bodyCrash(direction)
+    direction = bodyCrash(direction)
+    direction = bodyCrash(direction)
 
     return move_response(direction)
-    
-
 
 @bottle.post('/end')
 def end():
