@@ -136,7 +136,6 @@ def move():
     def avoidSnakes(currentMove):
         move = currentMove
         for snake in data['board']['snakes']:
-        # mark SNAKE_BODY segments
             for a in snake['body']:
                 if currentMove == "right":
                     if head["x"]+1 == a["x"] and head["y"] == a["y"]:
