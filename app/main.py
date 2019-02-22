@@ -117,18 +117,38 @@ def move():
                     move = "left"
         return move
 
+    def wallCrash(currentMove):
+        move = currentMove
+        if currentMove == "right":
+            if head["x"] == width-1:
+                move = "down"
+        if currentMove == "left":
+            if head["x"] == 0:
+                move = "up"
+        if currentMove == "up":
+            if head["y"] == 0:
+                move = "right"
+        if currentMove == "down":
+            if head["y"] == height-1:
+                move = "left"
+        return move
+
     directions = ['up','left','down','right']
     direction = directions[cur_turn %4]
 
-    if (health < 90):
+    if (health < 50):
         arr = foodClosest()
         direction = foodDirection(arr[0],arr[1])
 
+    direction = bodyCrash(direction)
+    direction = bodyCrash(direction)
+    direction = bodyCrash(direction)
+    direction = bodyCrash(direction)
 
-    direction = bodyCrash(direction)
-    direction = bodyCrash(direction)
-    direction = bodyCrash(direction)
-    direction = bodyCrash(direction)
+    direction = wallCrash(direction)
+    direction = wallCrash(direction)
+    direction = wallCrash(direction)
+    direction = wallCrash(direction)
 
     return move_response(direction)
 
