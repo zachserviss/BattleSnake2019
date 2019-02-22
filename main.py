@@ -8,21 +8,8 @@ from api import ping_response, start_response, move_response, end_response
 
 # GLOBAL VARIABLES ####
 globGrid = []
-# in grid:
-# x = empty
-# h = our head
-# b = our body
-# t = our tail
-# e = bad head
-# f = bad body
-# g = bad tail
-
-test_dir = 'right'
-ourOldHead = [-1,-1]
-ourOldTail = [-1,-1] # will track our tail
-
-badOldHeads = [] # Might be useless
-badOldTails = [] # will track other tails
+test_dir = 'down'
+allBadSnakes = []
 # END GLOBAL VARIABLES ####
 
 @bottle.route('/')
@@ -53,7 +40,7 @@ def ping():
 @bottle.post('/start')
 def start():
     data = bottle.request.json
-    
+    # New code in /start 
     # Similar setup as a move
     width = data['board']['width']
     height = data['board']['height']
@@ -62,34 +49,17 @@ def start():
     
     def createGrid():
         global globGrid
-        global ourOldTail
-        global badOldTails
         #creates a 2d grid
         for y in range(height):
             globGrid.append([])
             for x in range(width):
-                globGrid[y].append('x')
-        
-        # this block populates the grid
-        #first, our own head
-        globGrid[head['y']][head['x']] = 'h'
-        # set our old head as head location
-        ourOldHead[0] = head['x']
-        ourOldHead[1] = head['x']
-        #then set our old tail as the head location
-        ourOldTail[0] = head['x']
-        ourOldTail[1] = head['y']
-        # NOTICE! location is accessed [y][x]
-
-        # now, the other snake heads
-
-        for badSnake in baddies:
-            badHead = badSnake['body'][0]
-            badOldTails.append([badHead['x'],badHead['y']]) 
-            badOldHeads.append([badHead['x'],badHead['y']])
-            globGrid[badHead['y']][badHead['x']] = 'a'
-    
+                globGrid[y].append(-1)
+        #test
+        global test_dir
+        test_dir = 'left'
+    # Call The Function
     createGrid()
+    # END NEW CODE IN MAIN
     """
     TODO: If you intend to have a stateful snake AI,
             initialize your snake state here using the
@@ -211,46 +181,31 @@ def move():
 # NEW FUNCTION
     def updateGrid():
         global globGrid
-        global ourOldHead
-        global badOldHeads
-        global badOldTails
-
-        #update our position on the bord
-        globGrid[head['y']][head['x']] = 'h'
-        globGrid[ourOldHead[1]][ourOldHead[0]] = 'b'
-        #Clean up our old tail
-        globGrid[ourOldTail[1]][ourOldTail[0]] = 'x'
-        #if new tail is in same position will reset the value
-        globGrid[tail['y']][tail['x']] = 't'
-
-        #Now Update the baddies
+        global allBadSnakes
+        #empty grid of everything that's not us
+        for y in range(0, height):
+            for x in range(0, width):
+                mark = globGrid[y][x]
+                #raise Exception(str(x) + " &&&&&&&&&&& " + str(y))
+                if mark != 0 and mark != 1 and mark != 2:
+                    globGrid[y][x] = -1
+        #empty the list of snakes
+        del allBadSnakes[:]
+        
+        # refill the grid
         for i in range(len(baddies)):
-            snake = baddies[i]['body']
-
-            #these are meant to remove old heads and tails, didn't work
-
-            #while snake[1]['x']!=badOldHeads[i][0] and snake[1]['y']!=badOldHeads[i][1]:
-                #del badOldHeads[i]
-            #while snake[-1]['x']!=badOldTails[i][0] and snake[-1]['y']!=badOldTails[i][1]:
-                #del badOldTails[i]
-
-            #fill the body
-            for j in range(0,len(snake)):
-                snakeBody = snake[j]
-                globGrid[snakeBody['y']][snakeBody['x']] = 'f'
+            badSnake = baddies[i]['body']
+            headMark = int(i+1)*3
+            bodyMark = headMark + 1
+            tailMark = headMark + 2
+            for seg in badSnake:
+                globGrid[seg['y']][seg['x']] = bodyMark
+            globGrid[badSnake[-1]['y']][badSnake[-1]['x']]=tailMark;
+            globGrid[badSnake[0]['y']][badSnake[0]['x']]=headMark;
             
-            #place the head
-            snakeHead = snake[0]
-            globGrid[snakeHead['y']][snakeHead['x']] = 'e'
-            
-            #place the tail
-            snakeTail = snake[-1]
-            oldTail = badOldTails[i]
-            if globGrid[oldTail[1]][oldTail[0]] == 'g':
-                globGrid[oldTail[1]][oldTail[0]] = 'x'
-            globGrid[snakeTail['y']][snakeTail['x']] = 'g'
-
-
+            allBadSnakes.append([headMark, len(badSnake)])
+        global test_dir
+        test_dir = directions[cur_turn % 4]
         
     directions = ['up','left','down','right']
     direction = directions[cur_turn %4]
@@ -276,6 +231,7 @@ def move():
     direction = wallCrash(direction)
     
     updateGrid()
+    global test_dir
     return move_response(direction)
 
 @bottle.post('/end')
