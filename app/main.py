@@ -132,6 +132,25 @@ def move():
             if head["y"] == height-1:
                 move = "left"
         return move
+    
+    def avoidSnakes(currentMove):
+        move = currentMove
+        for snake in data['board']['snakes']:
+        # mark SNAKE_BODY segments
+            for a in snake['body']:
+                if currentMove == "right":
+                    if head["x"]+1 == a["x"] and head["y"] == a["y"]:
+                        move = "down"
+                if currentMove == "left":
+                    if head["x"]-1 == a["x"] and head["y"] == a["y"]:
+                        move = "up"
+                if currentMove == "up":
+                    if head["y"]-1 == a["y"] and head["x"] == a["x"]:
+                        move = "right"
+                if currentMove == "down":
+                    if head["y"]+1 == a["y"] and head["x"] == a["x"]:
+                        move = "left"
+        return move         
 
     directions = ['up','left','down','right']
     direction = directions[cur_turn %4]
@@ -144,6 +163,12 @@ def move():
     direction = bodyCrash(direction)
     direction = bodyCrash(direction)
     direction = bodyCrash(direction)
+
+    direction = avoidSnakes(direction)
+    direction = avoidSnakes(direction)
+    direction = avoidSnakes(direction)
+    direction = avoidSnakes(direction)
+
 
     direction = wallCrash(direction)
     direction = wallCrash(direction)
