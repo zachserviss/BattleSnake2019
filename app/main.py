@@ -149,30 +149,40 @@ def move():
                 if currentMove == "down":
                     if head["y"]+1 == a["y"] and head["x"] == a["x"]:
                         move = "left"
-        return move         
+        return move
+
+    def safeMove():
+        safeMoves = []
+        possibleMoves = ['up','left','down','right']
+        for move in possibleMoves:
+            move1 = bodyCrash(move)
+
+            move2 = wallCrash(move)
+
+            move3 = avoidSnakes(move)
+
+            if move1 == move2 and move1 == move3:
+                safeMoves.append(move1)
+
+        return safeMoves
+
+    directionIsSafe = False
+    safeMoves = safeMove()
+    randomMove = random.randint(0,len(safeMoves)-1)
 
     directions = ['up','left','down','right']
     direction = directions[cur_turn %4]
 
-    if (health < 50):
+    if (health < 95):
         arr = foodClosest()
         direction = foodDirection(arr[0],arr[1])
 
-    direction = bodyCrash(direction)
-    direction = bodyCrash(direction)
-    direction = bodyCrash(direction)
-    direction = bodyCrash(direction)
+    for move in safeMoves:
+        if direction == move:
+            directionIsSafe = True
 
-    direction = avoidSnakes(direction)
-    direction = avoidSnakes(direction)
-    direction = avoidSnakes(direction)
-    direction = avoidSnakes(direction)
-
-
-    direction = wallCrash(direction)
-    direction = wallCrash(direction)
-    direction = wallCrash(direction)
-    direction = wallCrash(direction)
+    if directionIsSafe == False:
+        direction = safeMoves[randomMove]
 
     return move_response(direction)
 
