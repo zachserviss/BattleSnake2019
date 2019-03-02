@@ -259,7 +259,7 @@ def move():
             for badguy in baddies:
                 badHead = badguy['body'][0]
                 if data['you']['id'] != badguy['id']:
-                    if (abs(badHead['y'] - coord[1]) < 2) and (abs(badHead['x'] - coord[0]) < 2) and (len(badguy['body']) >= len(body)):
+                    if (((abs(badHead['y'] - coord[1])) + (abs(badHead['x'] - coord[0]))) <=2) and  (len(badguy['body']) >= len(body)):
                         safe = False
             if safe == True:
                 prefferdMoves.append(coord[2])
@@ -275,7 +275,7 @@ def move():
     directions = ['up','left','down','right']
     direction = directions[cur_turn %4]
 
-    if (health < 90):
+    if (health < 30):
         arr = foodClosest()
         direction = foodDirection(arr[0],arr[1])
 
