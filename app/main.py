@@ -228,13 +228,45 @@ def move():
             if m == move:
                 return move   
         move = currentMove
+
+
         print str(move+"fianl move")
         print str(cur_turn)
         print str(str(head['x'])+":"+str(head['y']))
         
         return move        
 
-        
+    def generateSafeCoords():
+        moveSafe = safeMove()
+        safeCoords = []
+        for move in moveSafe:
+            if move == 'left':
+                safeCoords.append([head['x']-1, head['y'],'left'])
+            if move == 'right':
+                safeCoords.append([head['x']+1, head['y'],'right'])
+            if move == 'down':
+                safeCoords.append([head['x'], head['y']+1,'down'])
+            if move == 'up':
+                safeCoords.append([head['x'], head['y']-1,'up'])  
+
+        return safeCoords
+
+    def prefferdMoves():
+        prefferdMoves = []
+        coords = generateSafeCoords() 
+        for coord in coords:
+            safe = True
+            for badguy in baddies:
+                badHead = badguy['body'][0]
+                if data['you']['id'] != badguy['id']:
+                    if (abs(badHead['y'] - coord[1]) < 2) and (abs(badHead['x'] - coord[0]) < 2) and (len(badguy['body']) >= len(body)):
+                        safe = False
+            if safe == True:
+                prefferdMoves.append(coord[2])
+        return prefferdMoves                        
+
+
+
 
     directionIsSafe = False
     
@@ -243,12 +275,17 @@ def move():
     directions = ['up','left','down','right']
     direction = directions[cur_turn %4]
 
-    if (health < 70):
+    if (health < 90):
         arr = foodClosest()
         direction = foodDirection(arr[0],arr[1])
 
     #direction = directions[cur_turn %4]
-    safeMoves = safeMove()
+    safeMoves = prefferdMoves()
+
+    if not safeMoves:
+        lastResort = safeMove()
+        safeMoves = lastResort
+
     for move in safeMoves:
         if direction == move:
             directionIsSafe = True
