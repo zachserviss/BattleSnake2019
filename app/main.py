@@ -49,9 +49,9 @@ def start():
     header = {"Content-Type":"application/json"}
 
 
-    color= "#ff00ff"
-    headType= "bendr"
-    tailType= "pixel"
+    color= "#48f404"
+    headType= "beluga"
+    tailType= "fat-rattle"
        
     return start_response(color, headType, tailType)
 
