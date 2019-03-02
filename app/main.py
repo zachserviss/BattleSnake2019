@@ -122,12 +122,15 @@ def move():
         if currentMove == "right":
             if head["x"] == width-1:
                 move = "down"
+
         if currentMove == "left":
             if head["x"] == 0:
                 move = "up"
+
         if currentMove == "up":
             if head["y"] == 0:
                 move = "right"
+
         if currentMove == "down":
             if head["y"] == height-1:
                 move = "left"
@@ -163,26 +166,52 @@ def move():
 
             if move1 == move2 and move1 == move3:
                 safeMoves.append(move1)
+        return safeMoves        
+    
+    def cornerCrash(currentMove):
+        move = currentMove
+        if (head['x'] == width-1 and head['y'] == 1) or (head['x'] == 0 and head['y']==2):
+            move = 'down'
+        if head['x'] == 1 and head['y'] == height-1:
+            move = 'right'
+        if head['x'] == width-2 and head['y'] == height-1:
+            move = 'left'
+        if head['x'] == width-1 and head['y'] == height-2:
+            move = 'up' 
+        move1 = safeMove()
+        for m in move1:
+            if m == move:
+                pass
+            else:
+                move = currentMove    
 
-        return safeMoves
+
+        return move        
+
+        
 
     directionIsSafe = False
-    safeMoves = safeMove()
-    randomMove = random.randint(0,len(safeMoves)-1)
+    
+    
 
     directions = ['up','left','down','right']
     direction = directions[cur_turn %4]
 
-    if (health < 95):
+    if (health < 30):
         arr = foodClosest()
         direction = foodDirection(arr[0],arr[1])
 
+    #direction = directions[cur_turn %4]
+    safeMoves = safeMove()
     for move in safeMoves:
         if direction == move:
             directionIsSafe = True
 
+
     if directionIsSafe == False:
-        direction = safeMoves[randomMove]
+        direction = safeMoves[0]
+
+    direction = cornerCrash(direction)
 
     return move_response(direction)
 
