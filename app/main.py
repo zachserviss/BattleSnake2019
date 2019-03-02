@@ -45,7 +45,7 @@ def start():
     headType = "beluga"
     tailType = "curled"
     
-    return start_response(color,headType,tailType)
+    return start_response(color)
 
 
 @bottle.post('/move')
