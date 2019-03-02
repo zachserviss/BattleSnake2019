@@ -276,7 +276,7 @@ def move():
     directions = ['up','left','down','right']
     direction = directions[cur_turn %4]
 
-    if (health < 90):
+    if (health < 100):
         arr = foodClosest()
         direction = foodDirection(arr[0],arr[1])
 
