@@ -42,8 +42,10 @@ def start():
     print(json.dumps(data))
 
     color = "#00FF09"
-
-    return start_response(color)
+    headType = "beluga"
+    tailType = "curled"
+    
+    return start_response(color,headType,tailType)
 
 
 @bottle.post('/move')
@@ -170,22 +172,66 @@ def move():
     
     def cornerCrash(currentMove):
         move = currentMove
-        if (head['x'] == width-1 and head['y'] == 1) or (head['x'] == 0 and head['y']==2):
-            move = 'down'
-        if head['x'] == 1 and head['y'] == height-1:
-            move = 'right'
-        if head['x'] == width-2 and head['y'] == height-1:
-            move = 'left'
-        if head['x'] == width-1 and head['y'] == height-2:
-            move = 'up' 
+        #4 oclock
+        if head['x']== width-1 and head['y']== height-2:
+                if body[1]['x'] == head['x'] and body[1]['y'] == head['y']-1:
+                   move = 'left'
+                if body[1]['x'] == head['x']-1 and body[1]['y'] == head['y']:
+                    move = 'up'
+        # 5 oclock            
+        if head['x']== width-2 and head['y']== height-1:
+                if body[1]['x'] == head['x'] and body[1]['y'] == head['y']-1:
+                   move = 'left'
+                if body[1]['x'] == head['x']-1 and body[1]['y'] == head['y']:
+                    move = 'up'
+        #7 oclock            
+        if head['x']== 1 and head['y']== height-1:
+                if body[1]['x'] == head['x']+1 and body[1]['y'] == head['y']:
+                   move = 'up'
+                if body[1]['x'] == head['x'] and body[1]['y'] == head['y']-1:
+                    move = 'right'
+
+        #8 oclock            
+        if head['x']== 0 and head['y']== height-2:
+                if body[1]['x'] == head['x'] and body[1]['y'] == head['y']+1:
+                   move = 'up'
+                if body[1]['x'] == head['x']-1 and body[1]['y'] == head['y']:
+                    move = 'right'  
+        # 10 oclock            
+        if head['x']== 0 and head['y']== 1:
+                if body[1]['x'] == head['x'] and body[1]['y'] == head['y']-1:
+                   move = 'right'
+                if body[1]['x'] == head['x']+1 and body[1]['y'] == head['y']:
+                    move = 'down'   
+        # 11
+        if head['x']== 1 and head['y']== 0:
+                if body[1]['x'] == head['x'] and body[1]['y'] == head['y']+1:
+                   move = 'right'
+                if body[1]['x'] == head['x']+1 and body[1]['y'] == head['y']:
+                    move = 'down'
+        #1
+        if head['x']== width-2 and head['y']== 0:
+                if body[1]['x'] == head['x']-1 and body[1]['y'] == head['y']:
+                   move = 'down'
+                if body[1]['x'] == head['x'] and body[1]['y'] == head['y']+1:
+                    move = 'left'
+        #2
+        if head['x']== width-1 and head['y']== 1:
+                if body[1]['x'] == head['x']-1 and body[1]['y'] == head['y']:
+                   move = 'down'
+                if body[1]['x'] == head['x'] and body[1]['y'] == head['y']+1:
+                    move = 'left'                                                                                       
+        print str(move+"avoid corner")    
         move1 = safeMove()
         for m in move1:
+            print str(m+"safe move")
             if m == move:
-                pass
-            else:
-                move = currentMove    
-
-
+                return move   
+        move = currentMove
+        print str(move+"fianl move")
+        print str(cur_turn)
+        print str(str(head['x'])+":"+str(head['y']))
+        
         return move        
 
         
@@ -197,7 +243,7 @@ def move():
     directions = ['up','left','down','right']
     direction = directions[cur_turn %4]
 
-    if (health < 30):
+    if (health < 70):
         arr = foodClosest()
         direction = foodDirection(arr[0],arr[1])
 
@@ -213,6 +259,7 @@ def move():
 
     direction = cornerCrash(direction)
 
+    print str(direction+"final actual really move")
     return move_response(direction)
 
 @bottle.post('/end')
