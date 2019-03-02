@@ -3,6 +3,7 @@ import os
 import random
 import bottle
 
+
 from api import ping_response, start_response, move_response, end_response
 
 @bottle.route('/')
@@ -39,13 +40,22 @@ def start():
             initialize your snake state here using the
             request's data if necessary.
     """
-    print(json.dumps(data))
+    #print(json.dumps(data))
 
-    color = "#00FF09"
-    headType = "beluga"
-    tailType = "curled"
-    
-    return start_response(color)
+    #color = "#00FF09"
+    #headType = "beluga"
+    #tailType = "curled"
+    status = 200
+    header = {"Content-Type":"application/json"}
+
+
+    color= "#ff00ff"
+    headType= "bendr"
+    tailType= "pixel"
+       
+    return start_response(color, headType, tailType)
+
+    #return start_response(startSnake)
 
 
 @bottle.post('/move')
