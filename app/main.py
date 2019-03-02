@@ -276,13 +276,13 @@ def move():
     directions = ['up','left','down','right']
     direction = directions[cur_turn %4]
 
-    if (health < 100):
-        arr = foodClosest()
-        direction = foodDirection(arr[0],arr[1])
+    
 
     #direction = directions[cur_turn %4]
     safeMoves = prefferdMoves()
-
+    if (health < 50):
+        arr = foodClosest()
+        direction = foodDirection(arr[0],arr[1])
     if not safeMoves:
         lastResort = safeMove()
         safeMoves = lastResort
