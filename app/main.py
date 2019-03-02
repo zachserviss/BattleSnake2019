@@ -141,7 +141,8 @@ def move():
     def avoidSnakes(currentMove):
         move = currentMove
         for snake in data['board']['snakes']:
-            for a in snake['body']:
+            for segment in range(0, len(snake['body'])-1):
+                a = snake['body'][segment]
                 if currentMove == "right":
                     if head["x"]+1 == a["x"] and head["y"] == a["y"]:
                         move = "down"
@@ -275,7 +276,7 @@ def move():
     directions = ['up','left','down','right']
     direction = directions[cur_turn %4]
 
-    if (health < 30):
+    if (health < 90):
         arr = foodClosest()
         direction = foodDirection(arr[0],arr[1])
 
