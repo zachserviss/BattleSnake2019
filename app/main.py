@@ -280,7 +280,7 @@ def move():
 
     #direction = directions[cur_turn %4]
     safeMoves = prefferdMoves()
-    if (health < 50):
+    if (health < 99):
         arr = foodClosest()
         direction = foodDirection(arr[0],arr[1])
     if not safeMoves:
