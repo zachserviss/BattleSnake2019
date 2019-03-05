@@ -73,37 +73,40 @@ def move():
     baddies = data['board']['snakes']
     health = data['you']['health']
     head = data['you']['body'][0]
+    tail = data['you']['body'][-1]
     body = data['you']['body']
 
     def foodClosest():
-        minDistance = [0,0,width+height]
-        for a in food:
-            fooditemx = a["x"]
-            fooditemy = a["y"]
+        #find distance to closest piece of food
+        minDistanceToFood = [0,0,width+height]
+        for piece in food:
+            foodPieceX = piece["x"]
+            foodPieceY = piece["y"]
 
-            snakex = head["x"]
-            snakey = head["y"]
+            snakeHeadX = head["x"]
+            snakeHeadY = head["y"]
 
-            diffx = fooditemx - snakex
-            diffy = fooditemy - snakey
+            distanceToFoodX = foodPieceX - snakeHeadX
+            distanceToFoodY = foodPieceY - snakeHeadY
 
-            currDistance = abs(diffx)+abs(diffy)
+            currDistance = abs(distanceToFoodX)+abs(distanceToFoodX)
 
-            if currDistance < (minDistance[2]):
-                minDistance[2] = currDistance
-                minDistance[0] = diffx
-                minDistance[1] = diffy
+            if currDistance < (minDistanceToFood[2]):
+                minDistanceToFood[0] = distanceToFoodX
+                minDistanceToFood[1] = distanceToFoodY
+                minDistanceToFood[2] = currDistance
 
-        return minDistance
+        return minDistanceToFood
 
-    def foodDirection(x,y):
-        if abs(x) >= abs(y):
-            if x > 0:
+    def foodDirection(foodPieceX,foodPieceY):
+        #find directions to closest piece of food
+        if abs(foodPieceX) >= abs(foodPieceY):
+            if foodPieceX > 0:
                 return "right"
             else:
                 return "left"
         else:
-            if y > 0:
+            if foodPieceY > 0:
                 return "down"
             else:
                 return	"up"
@@ -114,22 +117,23 @@ def move():
         #up is plus y
         #down is minus y
         move = currentMove
-        for a in body:
+        for snakePiece in body:
             if currentMove == "right":
-                if head["x"]+1 == a["x"] and head["y"] == a["y"]:
+                if head["x"]+1 == snakePiece["x"] and head["y"] == snakePiece["y"]:
                     move = "down"
             if currentMove == "left":
-                if head["x"]-1 == a["x"] and head["y"] == a["y"]:
+                if head["x"]-1 == snakePiece["x"] and head["y"] == snakePiece["y"]:
                     move = "up"
             if currentMove == "up":
-                if head["y"]-1 == a["y"] and head["x"] == a["x"]:
+                if head["y"]-1 == snakePiece["y"] and head["x"] == snakePiece["x"]:
                     move = "right"
             if currentMove == "down":
-                if head["y"]+1 == a["y"] and head["x"] == a["x"]:
+                if head["y"]+1 == snakePiece["y"] and head["x"] == snakePiece["x"]:
                     move = "left"
         return move
 
     def wallCrash(currentMove):
+        #turn if youre gonna hit a wall
         move = currentMove
         if currentMove == "right":
             if head["x"] == width-1:
@@ -150,20 +154,23 @@ def move():
     
     def avoidSnakes(currentMove):
         move = currentMove
+        #find all snakes in board
         for snake in data['board']['snakes']:
+            #map out each segment of a snake on the board
             for segment in range(0, len(snake['body'])-1):
-                a = snake['body'][segment]
+                badSnakeBody = snake['body'][segment]
+                #turn of your gonna hit a snake
                 if currentMove == "right":
-                    if head["x"]+1 == a["x"] and head["y"] == a["y"]:
+                    if head["x"]+1 == badSnakeBody["x"] and head["y"] == badSnakeBody["y"]:
                         move = "down"
                 if currentMove == "left":
-                    if head["x"]-1 == a["x"] and head["y"] == a["y"]:
+                    if head["x"]-1 == badSnakeBody["x"] and head["y"] == badSnakeBody["y"]:
                         move = "up"
                 if currentMove == "up":
-                    if head["y"]-1 == a["y"] and head["x"] == a["x"]:
+                    if head["y"]-1 == badSnakeBody["y"] and head["x"] == badSnakeBody["x"]:
                         move = "right"
                 if currentMove == "down":
-                    if head["y"]+1 == a["y"] and head["x"] == a["x"]:
+                    if head["y"]+1 == badSnakeBody["y"] and head["x"] == badSnakeBody["x"]:
                         move = "left"
         return move
 
@@ -177,11 +184,13 @@ def move():
 
             move3 = avoidSnakes(move)
 
+
             if move1 == move2 and move1 == move3:
                 safeMoves.append(move1)
         return safeMoves        
     
     def cornerCrash(currentMove):
+        #numbers refer to clock position of corner on board
         move = currentMove
         #4 oclock
         if head['x']== width-1 and head['y']== height-2:
@@ -232,20 +241,16 @@ def move():
                    move = 'down'
                 if body[1]['x'] == head['x'] and body[1]['y'] == head['y']+1:
                     move = 'left'                                                                                       
-        print str(move+"avoid corner")    
-        move1 = safeMove()
-        for m in move1:
-            print str(m+"safe move")
-            if m == move:
+   
+        knownSafeMoves = safeMove()
+        for moves in knownSafeMoves:
+            if moves == move:
                 return move   
         move = currentMove
 
-
-        print str(move+"fianl move")
-        print str(cur_turn)
-        print str(str(head['x'])+":"+str(head['y']))
         
-        return move        
+        return move
+
 
     def generateSafeCoords():
         moveSafe = safeMove()
@@ -274,9 +279,59 @@ def move():
                         safe = False
             if safe == True:
                 prefferdMoves.append(coord[2])
-        return prefferdMoves                        
+        return prefferdMoves 
+
+    def timeToKill():
+        for snake in baddies:
+            if len(snake) > len(body):
+                return False
+            else:
+                return True                             
 
 
+    def headDirections():
+        for badguy in baddies:
+                badHead = badguy['body'][0]
+                if head['x']>badHead['x']:
+                    move = 'right'
+                if head['x']<badHead['x']:
+                    move = 'left'
+                if head['y']>badHead['y']:
+                    move = 'down'
+                if head['x']>badHead['x']:
+                    move = 'up'  
+        return move  
+    def tailClosest():
+        minDistanceToTail = [0,0,width+height]
+        snakeTailX = tail["x"]
+        snakeTailY = tail["y"]
+
+        snakeHeadX = head["x"]
+        snakeHeadY = head["y"]
+
+        distanceToTailX = snakeTailX - snakeHeadX
+        distanceToTailY = snakeTailY - snakeHeadY
+
+        currDistance = abs(distanceToTailX)+abs(distanceToTailY)
+
+        if currDistance < (minDistanceToTail[2]):
+            minDistanceToTail[0] = distanceToTailX
+            minDistanceToTail[1] = distanceToTailY
+            minDistanceToTail[2] = currDistance
+        return minDistanceToTail
+
+    def chaseTail(x,y):
+        #find directions to closest piece of food
+        if abs(x) >= abs(y):
+            if x > 0:
+                return "right"
+            else:
+                return "left"
+        else:
+            if y > 0:
+                return "down"
+            else:
+                return  "up"            
 
 
     directionIsSafe = False
@@ -290,9 +345,15 @@ def move():
 
     #direction = directions[cur_turn %4]
     safeMoves = prefferdMoves()
-    if (health < 99):
+    
+    if (health < 30):
         arr = foodClosest()
         direction = foodDirection(arr[0],arr[1])
+    else:
+        arr = tailClosest()
+        direction = chaseTail(arr[0],arr[1])    
+    
+
     if not safeMoves:
         lastResort = safeMove()
         safeMoves = lastResort
@@ -306,8 +367,8 @@ def move():
         direction = safeMoves[0]
 
     direction = cornerCrash(direction)
-
     print str(direction+"final actual really move")
+    print str(data['you']['id'])
     return move_response(direction)
 
 @bottle.post('/end')
